@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BPPKAD Blora - Realisasi APBD 2017-2024</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/supabase/2.38.0/supabase.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <img src="https://via.placeholder.com/40x40/0066cc/ffffff?text=B" alt="Logo" class="logo">
+                <span>BPPKAD Blora</span>
+            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" onclick="showPage('home')" class="nav-link active">Beranda</a></li>
+                <li><a href="#" onclick="showPage('pendapatan')" class="nav-link">Pendapatan</a></li>
+                <li><a href="#" onclick="showPage('pembelanjaan')" class="nav-link">Pembelanjaan</a></li>
+                <li><a href="#" onclick="showPage('pembiayaan')" class="nav-link">Pembiayaan</a></li>
+                <li><a href="#" onclick="showPage('admin')" class="nav-link">Admin</a></li>
+            </ul>
+            <div class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Home Page -->
+    <div id="homePage" class="page active">
+        <header class="hero">
+            <div class="container">
+                <h1>Realisasi APBD Kabupaten Blora</h1>
+                <p>Transparansi Anggaran Pendapatan dan Belanja Daerah Tahun 2017 - 2024</p>
+            </div>
+        </header>
+
+        <section class="summary-section">
+            <div class="container">
+                <h2>Ringkasan Realisasi APBD</h2>
+                <div class="summary-cards">
+                    <div class="card">
+                        <h3>Total Pendapatan</h3>
+                        <p class="amount" id="totalPendapatan">Rp 0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Pembelanjaan</h3>
+                        <p class="amount" id="totalPembelanjaan">Rp 0</p>
+                    </div>
+                    <div class="card">
+                        <h3>Total Pembiayaan</h3>
+                        <p class="amount" id="totalPembiayaan">Rp 0</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="chart-section">
+            <div class="container">
+                <h2>Grafik Realisasi APBD Per Kategori</h2>
+                <div class="chart-container">
+                    <canvas id="homeChart"></canvas>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Pendapatan Page -->
+    <div id="pendapatanPage" class="page">
+        <div class="container">
+            <h1>Data Pendapatan</h1>
+            <div class="chart-container">
+                <canvas id="pendapatanChart"></canvas>
+            </div>
+            <div id="pendapatanSubCharts"></div>
+            <div class="data-table">
+                <h3>Tabel Data Pendapatan</h3>
+                <table id="pendapatanTable">
+                    <thead>
+                        <tr>
+                            <th>Tahun</th>
+                            <th>Subkategori</th>
+                            <th>Jumlah (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pembelanjaan Page -->
+    <div id="pembelanjaanPage" class="page">
+        <div class="container">
+            <h1>Data Pembelanjaan</h1>
+            <div class="chart-container">
+                <canvas id="pembelanjaanChart"></canvas>
+            </div>
+            <div id="pembelanjaanSubCharts"></div>
+            <div class="data-table">
+                <h3>Tabel Data Pembelanjaan</h3>
+                <table id="pembelanjaanTable">
+                    <thead>
+                        <tr>
+                            <th>Tahun</th>
+                            <th>Subkategori</th>
+                            <th>Jumlah (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pembiayaan Page -->
+    <div id="pembiayaanPage" class="page">
+        <div class="container">
+            <h1>Data Pembiayaan</h1>
+            <div class="chart-container">
+                <canvas id="pembiayaanChart"></canvas>
+            </div>
+            <div id="pembiayaanSubCharts"></div>
+            <div class="data-table">
+                <h3>Tabel Data Pembiayaan</h3>
+                <table id="pembiayaanTable">
+                    <thead>
+                        <tr>
+                            <th>Tahun</th>
+                            <th>Subkategori</th>
+                            <th>Jumlah (Rp)</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Page -->
+    <div id="adminPage" class="page">
+        <div class="container">
+            <h1>Panel Admin</h1>
+            
+            <!-- Input Form -->
+            <div class="admin-section">
+                <h2>Tambah Data Baru</h2>
+                <form id="dataForm" class="data-form">
+                    <div class="form-group">
+                        <label for="tahun">Tahun:</label>
+                        <select id="tahun" required>
+                            <option value="">Pilih Tahun</option>
+                            <option value="2017">2017</option>
+                            <option value="2018">2018</option>
+                            <option value="2019">2019</option>
+                            <option value="2020">2020</option>
+                            <option value="2021">2021</option>
+                            <option value="2022">2022</option>
+                            <option value="2023">2023</option>
+                            <option value="2024">2024</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kategori">Kategori:</label>
+                        <select id="kategori" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Pendapatan">Pendapatan</option>
+                            <option value="Pembelanjaan">Pembelanjaan</option>
+                            <option value="Pembiayaan">Pembiayaan</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="subkategori">Subkategori:</label>
+                        <input type="text" id="subkategori" placeholder="Masukkan subkategori..." required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="jumlah">Jumlah (Rp):</label>
+                        <input type="number" id="jumlah" placeholder="Masukkan jumlah..." required>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">Tambah Data</button>
+                </form>
+            </div>
+
+            <!-- Data Management -->
+            <div class="admin-section">
+                <h2>Kelola Data</h2>
+                <div class="filter-section">
+                    <select id="filterKategori">
+                        <option value="">Semua Kategori</option>
+                        <option value="Pendapatan">Pendapatan</option>
+                        <option value="Pembelanjaan">Pembelanjaan</option>
+                        <option value="Pembiayaan">Pembiayaan</option>
+                    </select>
+                    <button onclick="loadAdminData()" class="btn-secondary">Refresh</button>
+                </div>
+                
+                <div class="data-table">
+                    <table id="adminTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Tahun</th>
+                                <th>Kategori</th>
+                                <th>Subkategori</th>
+                                <th>Jumlah (Rp)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Memuat data...</p>
+    </div>
+
+    <!-- Scripts -->
+    <script src="supabase.js"></script>
+    <script src="script.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Navigation */
+        .navbar {
+            background: #0066cc;
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .logo {
+            margin-right: 10px;
+            border-radius: 50%;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        /* Pages */
+        .page {
+            display: none;
+            min-height: calc(100vh - 80px);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #0066cc, #004499);
+            color: white;
+            text-align: center;
+            padding: 4rem 0;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Summary Section */
+        .summary-section {
+            padding: 3rem 0;
+            background: white;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            border-left: 4px solid #0066cc;
+        }
+
+        .card h3 {
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .amount {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        /* Chart Section */
+        .chart-section {
+            padding: 3rem 0;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+
+        /* Data Table */
+        .data-table {
+            margin: 2rem 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .data-table h3 {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        th {
+            background-color: #0066cc;
+            color: white;
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #f8f9fa;
+        }
+
+        /* Admin Section */
+        .admin-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 2rem 0;
+        }
+
+        .data-form {
+            display: grid;
+            gap: 1rem;
+            max-width: 500px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 2px rgba(0, 102, 204, 0.2);
+        }
+
+        .btn-primary, .btn-secondary {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 4px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: #0066cc;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .filter-section select {
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0066cc;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-menu {
+                position: fixed;
+                top: 80px;
+                left: -100%;
+                width: 100%;
+                height: calc(100vh - 80px);
+                background: #0066cc;
+                flex-direction: column;
+                justify-content: start;
+                align-items: center;
+                padding-top: 2rem;
+                transition: left 0.3s;
+            }
+
+            .nav-menu.active {
+                left: 0;
+            }
+
+            .nav-toggle {
+                display: flex;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .data-form {
+                max-width: 100%;
+            }
+
+            table {
+                font-size: 0.9rem;
+            }
+
+            th, td {
+                padding: 0.5rem;
+            }
+        }
+
+        /* Sub Charts */
+        .sub-chart {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin: 1rem 0;
+        }
+
+        .sub-chart h3 {
+            color: #0066cc;
+            margin-bottom: 1rem;
+            font-size: 1.2rem;
+        }
+    </style>
+
+    <script>
+        // Supabase Configuration
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        let supabase;
+        let charts = {};
+
+        // Initialize Supabase
+        function initSupabase() {
+            if (typeof supabase === 'undefined' && window.supabase) {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        }
+
+        // Navigation
+        function showPage(pageName) {
+            // Hide all pages
+            const pages = document.querySelectorAll('.page');
+            pages.forEach(page => page.classList.remove('active'));
+            
+            // Remove active from nav links
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active'));
+            
+            // Show selected page
+            const targetPage = document.getElementById(pageName + 'Page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // Add active to clicked nav link
+            event.target.classList.add('active');
+            
+            // Load page specific data
+            switch(pageName) {
+                case 'home':
+                    loadHomeData();
+                    break;
+                case 'pendapatan':
+                    loadCategoryData('Pendapatan');
+                    break;
+                case 'pembelanjaan':
+                    loadCategoryData('Pembelanjaan');
+                    break;
+                case 'pembiayaan':
+                    loadCategoryData('Pembiayaan');
+                    break;
+                case 'admin':
+                    loadAdminData();
+                    break;
+            }
+        }
+
+        // Mobile Navigation Toggle
+        function toggleMobileNav() {
+            const navMenu = document.getElementById('navMenu');
+            navMenu.classList.toggle('active');
+        }
+
+        // Format Currency
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Show/Hide Loading
+        function showLoading() {
+            document.getElementById('loading').classList.add('active');
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.remove('active');
+        }
+
+        // Load Home Data
+        async function loadHomeData() {
+            try {
+                showLoading();
+                
+                // Sample data - replace with actual Supabase query
+                const sampleData = [
+                    { kategori: 'Pendapatan', total: 150000000000 },
+                    { kategori: 'Pembelanjaan', total: 140000000000 },
+                    { kategori: 'Pembiayaan', total: 10000000000 }
+                ];
+                
+                // Update summary cards
+                sampleData.forEach(item => {
+                    const elementId = 'total' + item.kategori;
+                    const element = document.getElementById(elementId);
+                    if (element) {
+                        element.textContent = formatCurrency(item.total);
+                    }
+                });
+                
+                // Create home chart
+                createHomeChart(sampleData);
+                
+            } catch (error) {
+                console.error('Error loading home data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Create Home Chart
+        function createHomeChart(data) {
+            const ctx = document.getElementById('homeChart').getContext('2d');
+            
+            if (charts.home) {
+                charts.home.destroy();
+            }
+            
+            charts.home = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(item => item.kategori),
+                    datasets: [{
+                        label: 'Total Realisasi (Rp)',
+                        data: data.map(item => item.total),
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 99, 132, 0.8)',
+                            'rgba(255, 205, 86, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)',
+                            'rgba(255, 205, 86, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Realisasi APBD Per Kategori'
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Load Category Data
+        async function loadCategoryData(category) {
+            try {
+                showLoading();
+                
+                // Sample data - replace with actual Supabase query
+                const sampleData = generateSampleCategoryData(category);
+                
+                // Create main category chart
+                createCategoryChart(category, sampleData);
+                
+                // Create subcategory charts
+                createSubcategoryCharts(category, sampleData);
+                
+                // Update data table
+                updateDataTable(category, sampleData);
+                
+            } catch (error) {
+                console.error(`Error loading ${category} data:`, error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Generate Sample Category Data
+        function generateSampleCategoryData(category) {
+            const years = ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'];
+            const subcategories = {
+                'Pendapatan': ['PAD', 'Dana Perimbangan', 'Lain-lain Pendapatan'],
+                'Pembelanjaan': ['Belanja Pegawai', 'Belanja Barang', 'Belanja Modal'],
+                'Pembiayaan': ['Penerimaan Pembiayaan', 'Pengeluaran Pembiayaan']
+            };
+            
+            const data = [];
+            years.forEach(year => {
+                subcategories[category].forEach(sub => {
+                    data.push({
+                        id: Math.random().toString(36).substr(2, 9),
+                        tahun: year,
+                        kategori: category,
+                        subkategori: sub,
+                        jumlah: Math.floor(Math.random() * 50000000000) + 10000000000
+                    });
+                });
+            });
+            
+            return data;
+        }
+
+        // Create Category Chart
+        function createCategoryChart(category, data) {
+            const ctx = document.getElementById(category.toLowerCase() + 'Chart').getContext('2d');
+            
+            if (charts[category]) {
+                charts[category].destroy();
+            }
+            
+            const years = [...new Set(data.map(item => item.tahun))].sort();
+            const totals = years.map(year => {
+                return data
+                    .filter(item => item.tahun === year)
+                    .reduce((sum, item) => sum + item.jumlah, 0);
+            });
+            
+            charts[category] = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: years,
+                    datasets: [{
+                        label: `Total ${category} (Rp)`,
+                        data: totals,
+                        backgroundColor: 'rgba(0, 102, 204, 0.8)',
+                        borderColor: 'rgba(0, 102, 204, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: `Grafik Total ${category} Per Tahun`
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) {
+                                    return formatCurrency(value);
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Create Subcategory Charts
+        function createSubcategoryCharts(category, data) {
+            const containerId = category.toLowerCase() + 'SubCharts';
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            const subcategories = [...new Set(data.map(item => item.subkategori))];
+            const years = [...new Set(data.map(item => item.tahun))].sort();
+            
+            subcategories.forEach((sub, index) => {
+                const subData = data.filter(item => item.subkategori === sub);
+                const chartData = years.map(year => {
+                    const yearData = subData.find(item => item.tahun === year);
+                    return yearData ? yearData.jumlah : 0;
+                });
+                
+                const chartDiv = document.createElement('div');
+                chartDiv.className = 'sub-chart';
+                chartDiv.innerHTML = `
+                    <h3>${sub}</h3>
+                    <canvas id="${category}Sub${index}Chart"></canvas>
+                `;
+                container.appendChild(chartDiv);
+                
+                const ctx = document.getElementById(`${category}Sub${index}Chart`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: years,
+                        datasets: [{
+                            label: `${sub} (Rp)`,
+                            data: chartData,
+                            backgroundColor: `hsla(${index * 60}, 70%, 50%, 0.8)`,
+                            borderColor: `hsla(${index * 60}, 70%, 50%, 1)`,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return formatCurrency(value);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            });
+        }
+
+        // Update Data Table
+        function updateDataTable(category, data) {
+            const tableId = category.toLowerCase() + 'Table';
+            const tbody = document.querySelector(`#${tableId} tbody`);
+            tbody.innerHTML = '';
+            
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.tahun}</td>
+                    <td>${item.subkategori}</td>
+                    <td>${formatCurrency(item.jumlah)}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load Admin Data
+        async function loadAdminData() {
+            try {
+                showLoading();
+                
+                // Sample data for demo - replace with actual Supabase query
+                const sampleData = [];
+                const categories = ['Pendapatan', 'Pembelanjaan', 'Pembiayaan'];
+                const years = ['2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'];
+                
+                categories.forEach(cat => {
+                    const subData = generateSampleCategoryData(cat);
+                    sampleData.push(...subData);
+                });
+                
+                updateAdminTable(sampleData);
+                
+            } catch (error) {
+                console.error('Error loading admin data:', error);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Update Admin Table
+        function updateAdminTable(data) {
+            const tbody = document.querySelector('#adminTable tbody');
+            tbody.innerHTML = '';
+            
+            const filterKategori = document.getElementById('filterKategori').value;
+            const filteredData = filterKategori ? 
+                data.filter(item => item.kategori === filterKategori) : data;
+            
+            filteredData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.tahun}</td>
+                    <td>${item.kategori}</td>
+                    <td>${item.subkategori}</td>
+                    <td>${formatCurrency(item.jumlah)}</td>
+                    <td>
+                        <button class="btn-danger" onclick="deleteData('${item.id}')">
+                            Hapus
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Add Data
+        async function addData(formData) {
+            try {
+                showLoading();
+                
+                // In real implementation, use Supabase insert
+                console.log('Adding data:', formData);
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                
+                alert('Data berhasil ditambahkan!');
+                document.getElementById('dataForm').reset();
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('Error adding data:', error);
+                alert('Error menambahkan data: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Delete Data
+        async function deleteData(id) {
+            if (!confirm('Apakah Anda yakin ingin menghapus data ini?')) {
+                return;
+            }
+            
+            try {
+                showLoading();
+                
+                // In real implementation, use Supabase delete
+                console.log('Deleting data with id:', id);
+                
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                alert('Data berhasil dihapus!');
+                loadAdminData();
+                
+            } catch (error) {
+                console.error('Error deleting data:', error);
+                alert('Error menghapus data: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        // Form Submission Handler
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize
+            initSupabase();
+            loadHomeData();
+            
+            // Mobile navigation toggle
+            document.getElementById('navToggle').addEventListener('click', toggleMobileNav);
+            
+            // Form submission
+            document.getElementById('dataForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    tahun: document.getElementById('tahun').value,
+                    kategori: document.getElementById('kategori').value,
+                    subkategori: document.getElementById('subkategori').value,
+                    jumlah: parseInt(document.getElementById('jumlah').value)
+                };
+                
+                await addData(formData);
+            });
+            
+            // Filter change handler
+            document.getElementById('filterKategori').addEventListener('change', loadAdminData);
+        });
+
+        // Supabase Database Schema
+        /*
+        CREATE TABLE apbd_data (
+            id SERIAL PRIMARY KEY,
+            tahun INTEGER NOT NULL,
+            kategori VARCHAR(50) NOT NULL,
+            subkategori VARCHAR(100) NOT NULL,
+            jumlah BIGINT NOT NULL,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        );
+        */
+
+        // Supabase Functions (replace with actual implementation)
+        async function getDataFromSupabase(filters = {}) {
+            if (!supabase) return [];
+            
+            try {
+                let query = supabase.from('apbd_data').select('*');
+                
+                if (filters.kategori) {
+                    query = query.eq('kategori', filters.kategori);
+                }
+                if (filters.tahun) {
+                    query = query.eq('tahun', filters.tahun);
+                }
+                
+                const { data, error } = await query.order('tahun', { ascending: true });
+                
+                if (error) throw error;
+                return data || [];
+                
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                return [];
+            }
+        }
+
+        async function insertDataToSupabase(data) {
+            if (!supabase) throw new Error('Supabase not initialized');
+            
+            const { data: result, error } = await supabase
+                .from('apbd_data')
+                .insert([data]);
+                
+            if (error) throw error;
+            return result;
+        }
+
+        async function deleteDataFromSupabase(id) {
+            if (!supabase) throw new Error('Supabase not initialized');
+            
+            const { data, error } = await supabase
+                .from('apbd_data')
+                .delete()
+                .eq('id', id);
+                
+            if (error) throw error;
+            return data;
+        }
+    </script>
+</body>
+</html>
